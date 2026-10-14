@@ -1,0 +1,129 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cover-reverb"
+version = "0.1.0"
+description = "Match a reference vocal's reverb character and apply it to a dry cover vocal"
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.10"
+keywords = ["audio", "reverb", "mixing", "music-production", "cover-song", "dsp"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: End Users/Desktop",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Multimedia :: Sound/Audio :: Analysis",
+  "Topic :: Multimedia :: Sound/Audio :: Editors",
+  "Topic :: Multimedia :: Sound/Audio :: Mixers",
+]
+dependencies = [
+  "numpy>=1.23",
+  "scipy>=1.9",
+  "soundfile>=0.12",
+  "gradio>=4.44",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.4",
+  "pytest-cov>=4.1",
+  "ruff>=0.6",
+]
+
+[project.scripts]
+cover-reverb = "srv.runner:main"
+
+# Fill these in before publishing.
+[project.urls]
+Homepage = "https://github.com/Waterwzy/cover-reverb"
+Issues = "https://github.com/Waterwzy/cover-reverb/issues"
+
+[tool.setuptools]
+packages = ["srv"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+filterwarnings = [
+  "ignore::DeprecationWarning:gradio.*",
+]
+
+[tool.coverage.run]
+source = ["srv"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+  "raise NotImplementedError",
+]
+
+[tool.ruff]
+# Lint-only on purpose. `ruff format` is deliberately not part of this project:
+# with line-length 110 it rewrites hand-wrapped argument lists into single long
+# lines, which is churn without benefit. Style is enforced by the lint rules
+# below instead.
+line-length = 110
+target-version = "py310"
+exclude = [
+  ".git",
+  ".venv",
+  "venv",
+  "build",
+  "dist",
+  "__pycache__",
+  "cover_reverb_out",
+  "cover_reverb_selftest",
+  "cover_reverb_batch",
+]
+
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle errors
+  "W",   # pycodestyle warnings
+  "F",   # pyflakes
+  "I",   # import sorting
+  "B",   # flake8-bugbear
+  "C4",  # flake8-comprehensions
+  "PIE", # flake8-pie
+  "RET", # flake8-return
+  "SIM", # flake8-simplify
+  "RUF", # ruff-specific
+]
+ignore = [
+  # --- project-specific, not stylistic -------------------------------------
+  "E501",   # ruff counts characters; CJK strings blow past any sensible limit
+  "RUF001", # full-width punctuation in CJK docstrings and user-facing messages
+  "RUF002",
+  "RUF003",
+
+  # --- deliberately ignored: too opinionated to be worth the churn ----------
+  "RUF046", # "unnecessary int() cast": explicit casts document the API contract
+  "RUF007", # "use itertools.pairwise": zip(x, x[1:]) reads fine and is obvious
+  "B905",   # "zip() without strict=": the default is fine for our fixed-length pairs
+  "B008",   # "function call in argument default": the Gradio progress singleton pattern
+  "B017",   # "assert blind exception": asserting broadly is fine in a few guard tests
+  "SIM108", # a ternary is not always clearer than if/else
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+  "E402", # fixtures and helpers are grouped logically, not strictly by import order
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["srv"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"

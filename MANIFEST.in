@@ -1,0 +1,24 @@
+# Files included in the source distribution.
+include README.md
+include pyproject.toml
+include bootstrap_env.py
+include launch.py
+recursive-include srv *.py
+recursive-include scripts *
+recursive-include .github *.yml
+recursive-include tests *.py
+
+# Keep the sdist to source only: no caches, no build output, no local audio.
+global-exclude *.py[cod]
+global-exclude __pycache__/*
+global-exclude *.wav *.mp3 *.flac *.m4a
+global-exclude .coverage
+global-exclude *.egg-info/*
+prune dist
+prune build
+prune .venv
+prune .ruff_cache
+prune .pytest_cache
+prune cover_reverb_out
+prune cover_reverb_selftest
+prune cover_reverb_batch
